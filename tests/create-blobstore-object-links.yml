@@ -1,0 +1,28 @@
+---
+platform: linux
+
+# This task configuraiton file is used for testing only. Stand-alone execution of the task can 
+# be run with the following fly command.
+#
+# fly -t stcs-jed e -c create-blobstore-object-links.yml -i pipeline-src=../
+
+image_resource:
+  type: docker-image
+  source: 
+    repository: appbricks/automation-tools
+
+inputs:
+- name: pipeline-src
+
+run:
+  path: pipeline-src/scripts/create-object-links.sh
+  args: 
+  - 'cf-.*'
+  - 'nfs_.*'
+  - '/var/vcap/store/shared'
+  - 'cc-buildpacks cc-droplets cc-packages cc-resources'
+  - '__backup_links__'
+
+params:
+  # Copy params from backup-pcf.yml pipeline 
+  # and paste here before testing

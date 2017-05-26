@@ -1,0 +1,27 @@
+---
+platform: linux
+
+# This task configuraiton file is used for testing only. Stand-alone execution of the task can 
+# be run with the following fly command.
+#
+# fly -t stcs-jed e -c cleanup-backup.yml -i pipeline-src=../ -i backup-timestamp=../.backup-metadata
+
+image_resource:
+  type: docker-image
+  source: 
+    repository: appbricks/automation-tools
+
+inputs:
+- name: pipeline-src
+- name: backup-timestamp
+
+run:
+  path: pipeline-src/scripts/cleanup-backup.sh
+  args: [2]
+
+outputs:
+- name: restore-timestamp
+
+params:
+  # Copy params from backup-pcf.yml pipeline 
+  # and paste here before testing

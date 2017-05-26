@@ -1,0 +1,23 @@
+---
+platform: linux
+
+# This task configuraiton file is used for testing only. Stand-alone execution of the task can 
+# be run with the following fly command.
+#
+# fly -t stcs-jed e -c bosh-start-cc.yml -i pipeline-src=../
+
+image_resource:
+  type: docker-image
+  source: 
+    repository: appbricks/automation-tools
+
+inputs:
+- name: pipeline-src
+
+run:
+  path: pipeline-src/scripts/bosh-job-action.sh
+  args: [cf-, cloud_controller, start]
+
+params:
+  # Copy params from backup-pcf.yml pipeline 
+  # and paste here before testing

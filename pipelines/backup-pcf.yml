@@ -1,0 +1,264 @@
+---
+
+jobs:
+
+- name: backup-pcf
+  on_success: *success-alert
+  on_failure: *failure-alert
+  serial: true
+  plan:
+
+  - aggregate:
+    - get: pipeline-src
+    - get: daily
+      trigger: true
+
+  - aggregate:
+    - *copy-tasks
+    - put: {{environment}}
+      params:
+        claim: {{environment}}
+
+  - task: prepare-backup
+    config:
+      platform: linux
+      image_resource: *automation-image-resource
+      inputs:
+      - name: pipeline-src
+      - name: {{environment}}
+        path: backup-metadata
+      run:
+        path: tasks/prepare-backup.sh
+      outputs:
+      - name: backup-timestamp
+    params: *backup-restore-task-params
+
+  - task: stop-cc
+    config:
+      platform: linux
+      image_resource: *automation-image-resource
+      inputs:
+      - name: pipeline-src
+      run:
+        path: tasks/bosh-job-action.sh
+        args: [cf-, cloud_controller, stop]
+    params: *backup-restore-task-params
+    
+  - aggregate:
+
+    - do:
+
+      - task: backup-ert-mysql
+        config:
+          platform: linux
+          image_resource: *automation-image-resource
+          inputs:
+          - name: pipeline-src
+          - name: backup-timestamp
+          run:
+            path: tasks/backup-mysql.sh
+            args: [cf]
+        params: *backup-restore-task-params
+
+      - task: create-blobstore-object-links
+        config:
+          platform: linux
+          image_resource: *automation-image-resource
+          inputs:
+          - name: pipeline-src
+          run:
+            path: tasks/create-object-links.sh
+            args: 
+            - 'cf-.*'
+            - 'nfs_.*'
+            - '/var/vcap/store/shared'
+            - 'cc-buildpacks cc-droplets cc-packages cc-resources'
+            - '__backup_links__'
+        params: *backup-restore-task-params
+
+      - *start-cc
+
+      - task: backup-ert-blobstore
+        config:
+          platform: linux
+          image_resource: *automation-image-resource
+          inputs:
+          - name: pipeline-src
+          - name: backup-timestamp
+          run:
+            path: tasks/archive-objects.sh
+            args: 
+            - 'cf-.*'
+            - 'nfs_.*'
+            - '/var/vcap/store/shared/__backup_links__'
+            - 'cc-buildpacks cc-droplets cc-packages cc-resources'
+            - 'blobstore'
+        params: *backup-restore-task-params
+
+    - task: backup-opsman
+      config:
+        platform: linux
+        image_resource: *automation-image-resource
+        inputs:
+        - name: pipeline-src
+        - name: backup-timestamp
+        run:
+          path: tasks/backup-opsman.sh
+      params: *backup-restore-task-params
+
+  - task: cleanup
+    config:
+      platform: linux
+      image_resource: *automation-image-resource
+      inputs:
+      - name: pipeline-src
+      - name: backup-timestamp
+      run:
+        path: tasks/cleanup-backup.sh
+        args: [2]
+      outputs:
+      - name: restore-timestamp
+    params: *backup-restore-task-params
+
+  - put: {{environment}}
+    params:
+      add_claimed: restore-timestamp
+  - put: {{environment}}
+    params:
+      release: {{environment}}
+
+resources:
+
+- name: slack-notification
+  type: slack-notification
+  source:
+    url: {{slack_webhook_url}}
+    insecure: true
+
+- name: pipeline-src
+  type: git
+  source:
+    uri: {{pipeline_src_repo}}
+    branch: {{pipeline_src_repo_branch}}
+    paths:
+    - ci/assets/scripts/*
+    - ci/task-scripts/*
+    private_key: {{git_access_key}}
+
+- name: {{environment}}
+  type: pool
+  source:
+    uri: {{environment_pool_repo}}
+    branch: {{environment_pool_branch}}
+    pool: {{environment_pool_path}}
+    private_key: {{git_access_key}}
+
+- name: daily
+  type: time
+  source:
+    interval: 1h
+    location: {{locale}}
+    start: 02:00 AM
+    stop: 02:30 AM
+
+resource_types:
+
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+    tag: latest
+
+shared:
+
+  - &automation-image-resource
+    type: docker-image
+    source:
+      repository: {{automation_image}}
+      insecure_registries: [ {{docker_registry_host}} ]
+      username: {{docker_registry_user}}
+      password: {{docker_registry_pass}}
+
+  - &success-alert
+    put: slack-notification
+    params:
+      silent: true
+      username: {{slack_username}}
+      icon_emoji: ":rocket:"
+      text: |
+        *The <$ATC_EXTERNAL_URL/teams/main/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|$BUILD_PIPELINE_NAME - $BUILD_JOB_NAME> job passed!*
+
+  - &failure-alert
+    aggregate:
+    - *start-cc
+    - put: {{environment}}
+      params:
+        release: {{environment}}
+    - put: slack-notification
+      params:
+        silent: true
+        username: {{slack_username}}
+        icon_emoji: ":interrobang:"
+        text: |
+          *The <$ATC_EXTERNAL_URL/teams/main/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|$BUILD_PIPELINE_NAME - $BUILD_JOB_NAME> job failed!*
+
+  - &copy-tasks
+    task: copy-tasks
+    config:
+      platform: linux
+      image_resource: *automation-image-resource
+      inputs:
+      - name: pipeline-src
+      run:
+        path: pipeline-src/ci/task-scripts/copy-tasks.sh
+      outputs:
+      - name: scripts
+      - name: tasks
+    params: *backup-restore-task-params
+
+  - &start-cc
+    task: start-cc
+    config:
+      platform: linux
+      image_resource: *automation-image-resource
+      inputs:
+      - name: scripts
+      - name: tasks
+      run:
+        path: tasks/bosh-job-action.sh
+        args: [cf-, cloud_controller, start]
+    params: *backup-restore-task-params
+
+  - &backup-restore-task-params
+    # TRACE: true
+    SSH_KEY: {{ssh_key}}
+    OPSMAN_HOST: {{opsman_host}}
+    OPSMAN_SSH_USER: {{opsman_ssh_user}}
+    OPSMAN_PASSPHRASE: {{opsman_passphrase}}
+    PCFOPS_CLIENT: {{pcfops_client}}
+    PCFOPS_SECRET: {{pcfops_secret}}
+    BACKUP_TARGET: pcf_backup
+
+    ## Backend type should be one of 'scp', 's3', 'swift'
+    BACKUP_TYPE: swift
+    
+    ## Params to upload backups to OpenStack Swift Storage
+    OS_AUTH_URL: {{os_auth_url}}
+    OS_IDENTITY_API_VERSION: {{os_identity_api_version}}
+    OS_PROJECT_DOMAIN_NAME: {{os_project_domain_name}}
+    OS_PROJECT_NAME: {{os_project_name}}
+    OS_USER_DOMAIN_NAME: {{os_user_domain_name}}
+    OS_USERNAME: {{os_username}}
+    OS_PASSWORD: {{os_password}}
+    
+    ## Params to upload backups to S3 Storage
+    # S3_DOMAIN: {{s3_domain}}
+    # S3_BUCKET_NAME: {{s3_bucket_name}}
+    # AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
+    # AWS_SECRET_ACCESS_KEY: {{aws_secret_access_key}}
+    # AWS_REGION: {{aws_region}}
+    
+    ## Params to upload backups via SCP to a remote host path
+    # BACKUP_SSH_USER: {{backup_ssh_user}}
+    # BACKUP_SSH_HOST: {{backup_ssh_host}}
+    # BACKUP_SSH_PASSWORD: {{backup_ssh_password}}

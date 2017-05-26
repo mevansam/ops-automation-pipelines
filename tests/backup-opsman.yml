@@ -1,0 +1,23 @@
+---
+platform: linux
+
+# This task configuraiton file is used for testing only. Stand-alone execution of the task can 
+# be run with the following fly command.
+#
+# fly -t stcs-jed e -c backup-opsman.yml -i pipeline-src=../ -i backup-timestamp=.backup-metadata
+
+image_resource:
+  type: docker-image
+  source: 
+    repository: appbricks/automation-tools
+
+inputs:
+- name: pipeline-src
+- name: backup-timestamp
+
+run:
+  path: pipeline-src/scripts/backup-opsman.sh
+
+params:
+  # Copy params from backup-pcf.yml pipeline 
+  # and paste here before testing
