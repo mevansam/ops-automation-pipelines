@@ -175,7 +175,7 @@ shared:
     type: docker-image
     source:
       repository: {{automation_image}}
-      insecure_registries: [ {{docker_registry_host}} ]
+      insecure_registries: [ {{docker_insecure_registries}} ]
       username: {{docker_registry_user}}
       password: {{docker_registry_pass}}
 
