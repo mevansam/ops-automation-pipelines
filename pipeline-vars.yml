@@ -47,6 +47,11 @@ opsman_passphrase:
 pcfops_client: 
 pcfops_secret: 
 
+# Backup time and interval
+backup_interval:
+backup_interval_start:
+backup_interval_end:
+
 # Type of backup storage backend 
 backup_storage_type: scp
 
