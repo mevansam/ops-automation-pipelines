@@ -33,71 +33,71 @@ jobs:
       - name: job-session
     params: *backup-restore-task-params
 
-  - task: stop-cc
-    config:
-      platform: linux
-      image_resource: *automation-image-resource
-      inputs:
-      - name: pipeline-src
-      - name: job-session
-      run:
-        path: pipeline-src/scripts/bosh-job-action.sh
-        args: [cf-, cloud_controller, stop]
-    params: *backup-restore-task-params
-    
+  - do:
+
+    - task: stop-cc
+      config:
+        platform: linux
+        image_resource: *automation-image-resource
+        inputs:
+        - name: pipeline-src
+        - name: job-session
+        run:
+          path: pipeline-src/scripts/bosh-job-action.sh
+          args: [cf-, cloud_controller, stop]
+      params: *backup-restore-task-params
+
+    - task: backup-ert-mysql
+      config:
+        platform: linux
+        image_resource: *automation-image-resource
+        inputs:
+        - name: pipeline-src
+        - name: backup-timestamp
+        - name: job-session
+        run:
+          path: pipeline-src/scripts/backup-mysql.sh
+          args: [cf-]
+      params: *backup-restore-task-params
+
+    - task: create-blobstore-object-links
+      config:
+        platform: linux
+        image_resource: *automation-image-resource
+        inputs:
+        - name: pipeline-src
+        - name: job-session
+        run:
+          path: pipeline-src/scripts/create-object-links.sh
+          args: 
+          - 'cf-.*'
+          - 'nfs_.*'
+          - '/var/vcap/store/shared'
+          - 'cc-buildpacks cc-droplets cc-packages cc-resources'
+          - '__backup_links__'
+      params: *backup-restore-task-params
+
+    - *start-cc
+  
   - aggregate:
 
-    - do:
-
-      - task: backup-ert-mysql
-        config:
-          platform: linux
-          image_resource: *automation-image-resource
-          inputs:
-          - name: pipeline-src
-          - name: backup-timestamp
-          - name: job-session
-          run:
-            path: pipeline-src/scripts/backup-mysql.sh
-            args: [cf-]
-        params: *backup-restore-task-params
-
-      - task: create-blobstore-object-links
-        config:
-          platform: linux
-          image_resource: *automation-image-resource
-          inputs:
-          - name: pipeline-src
-          - name: job-session
-          run:
-            path: pipeline-src/scripts/create-object-links.sh
-            args: 
-            - 'cf-.*'
-            - 'nfs_.*'
-            - '/var/vcap/store/shared'
-            - 'cc-buildpacks cc-droplets cc-packages cc-resources'
-            - '__backup_links__'
-        params: *backup-restore-task-params
-
-      - *start-cc
-
-      - task: backup-ert-blobstore
-        config:
-          platform: linux
-          image_resource: *automation-image-resource
-          inputs:
-          - name: pipeline-src
-          - name: backup-timestamp
-          - name: job-session
-          run:
-            path: pipeline-src/scripts/archive-objects.sh
-            args: 
-            - 'cf-.*'
-            - 'nfs_.*'
-            - '/var/vcap/store/shared/__backup_links__'
-            - 'cc-buildpacks cc-droplets cc-packages cc-resources'
-            - 'blobstore'
-        params: *backup-restore-task-params
+    - task: backup-ert-blobstore
+      config:
+        platform: linux
+        image_resource: *automation-image-resource
+        inputs:
+        - name: pipeline-src
+        - name: backup-timestamp
+        - name: job-session
+        run:
+          path: pipeline-src/scripts/archive-objects.sh
+          args: 
+          - 'cf-.*'
+          - 'nfs_.*'
+          - '/var/vcap/store/shared/__backup_links__'
+          - 'cc-buildpacks cc-droplets cc-packages cc-resources'
+          - 'blobstore'
+      params: *backup-restore-task-params
 
     - task: backup-opsman
       config:
