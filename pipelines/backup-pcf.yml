@@ -14,7 +14,6 @@ jobs:
       trigger: true
 
   - aggregate:
-    - *copy-tasks
     - put: {{environment}}
       params:
         claim: {{environment}}
@@ -28,7 +27,7 @@ jobs:
       - name: {{environment}}
         path: backup-metadata
       run:
-        path: tasks/prepare-backup.sh
+        path: pipeline-src/scripts/prepare-backup.sh
       outputs:
       - name: backup-timestamp
     params: *backup-restore-task-params
@@ -40,7 +39,7 @@ jobs:
       inputs:
       - name: pipeline-src
       run:
-        path: tasks/bosh-job-action.sh
+        path: pipeline-src/scripts/bosh-job-action.sh
         args: [cf-, cloud_controller, stop]
     params: *backup-restore-task-params
     
@@ -56,7 +55,7 @@ jobs:
           - name: pipeline-src
           - name: backup-timestamp
           run:
-            path: tasks/backup-mysql.sh
+            path: pipeline-src/scripts/backup-mysql.sh
             args: [cf]
         params: *backup-restore-task-params
 
@@ -67,7 +66,7 @@ jobs:
           inputs:
           - name: pipeline-src
           run:
-            path: tasks/create-object-links.sh
+            path: pipeline-src/scripts/create-object-links.sh
             args: 
             - 'cf-.*'
             - 'nfs_.*'
@@ -86,7 +85,7 @@ jobs:
           - name: pipeline-src
           - name: backup-timestamp
           run:
-            path: tasks/archive-objects.sh
+            path: pipeline-src/scripts/archive-objects.sh
             args: 
             - 'cf-.*'
             - 'nfs_.*'
@@ -103,7 +102,7 @@ jobs:
         - name: pipeline-src
         - name: backup-timestamp
         run:
-          path: tasks/backup-opsman.sh
+          path: pipeline-src/scripts/backup-opsman.sh
       params: *backup-restore-task-params
 
   - task: cleanup
@@ -114,7 +113,7 @@ jobs:
       - name: pipeline-src
       - name: backup-timestamp
       run:
-        path: tasks/cleanup-backup.sh
+        path: pipeline-src/scripts/cleanup-backup.sh
         args: [2]
       outputs:
       - name: restore-timestamp
@@ -198,20 +197,6 @@ shared:
         text: |
           *The <$ATC_EXTERNAL_URL/teams/main/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|$BUILD_PIPELINE_NAME - $BUILD_JOB_NAME> job failed!*
 
-  - &copy-tasks
-    task: copy-tasks
-    config:
-      platform: linux
-      image_resource: *automation-image-resource
-      inputs:
-      - name: pipeline-src
-      run:
-        path: pipeline-src/ci/task-scripts/copy-tasks.sh
-      outputs:
-      - name: scripts
-      - name: tasks
-    params: *backup-restore-task-params
-
   - &start-cc
     task: start-cc
     config:
@@ -221,7 +206,7 @@ shared:
       - name: scripts
       - name: tasks
       run:
-        path: tasks/bosh-job-action.sh
+        path: pipeline-src/scripts/bosh-job-action.sh
         args: [cf-, cloud_controller, start]
     params: *backup-restore-task-params
 
