@@ -1,0 +1,66 @@
+---
+
+# Slack notification endpoint
+slack_webhook_url: 
+slack_username: 
+
+# SSH Key to inject into the image to allow SSH to remote 
+# instances containing resources that need to be accessible
+ssh_key:
+
+# The github user to use when updating version files
+git_user: 
+
+# The github key to use when updating version files
+git_key:
+
+# The github API key to use when accessing 
+# github repositories
+github_api_key: 
+
+# The automation-pipelines repository
+pipeline_src_repo: https://github.com/appbricks/ops-automation-pipelines.git
+pipeline_src_repo_branch: master
+
+# Docker registry access
+docker_insecure_registries:
+docker_registry_user: 
+docker_registry_pass: 
+
+# Docker image paths
+automation_image: appbricks/automation-tools
+
+# Concourse pool repository and path contain 
+# locks and metadata for backup and restore jobs
+environment_pool_repo: 
+environment_pool_branch: master
+environment_pool_path: 
+environment: 
+
+# Pivotal Ops Manager host and credentials
+opsman_host: 
+opsman_ssh_user: 
+opsman_passphrase: 
+pcfops_client: 
+pcfops_secret: 
+
+## OpenStack credentials for Swift access
+os_auth_url: 
+os_identity_api_version: 
+os_project_domain_name: 
+os_project_name: 
+os_user_domain_name: 
+os_username: 
+os_password: 
+
+## Credentials for S3 access
+# s3_domain: 
+# s3_bucket_name: 
+# aws_access_key_id: 
+# aws_secret_access_key: 
+# aws_region: 
+
+## Credentials for uploading backups via SCP to a remote host path
+# backup_ssh_user: 
+# backup_ssh_host: 
+# backup_ssh_password: 
