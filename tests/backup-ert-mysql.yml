@@ -17,7 +17,7 @@ inputs:
 
 run:
   path: pipeline-src/scripts/backup-mysql.sh
-  args: [cf]
+  args: [cf-]
 
 params:
   # Copy params from backup-pcf.yml pipeline 

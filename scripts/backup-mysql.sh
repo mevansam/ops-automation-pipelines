@@ -16,7 +16,7 @@ opsman::login_client $OPSMAN_HOST $PCFOPS_CLIENT $PCFOPS_SECRET $OPSMAN_PASSPHRA
 bosh::login_client root_ca_certificate $(opsman::get_director_ip) $PCFOPS_CLIENT $PCFOPS_SECRET
 
 PRODUCT_TYPE=$1
-MYSQL_PROXY_IP=$(opsman::get_job_vm_ip ${PRODUCT_TYPE}- 'mysql_proxy' 0)
+MYSQL_PROXY_IP=$(opsman::get_job_vm_ip ${PRODUCT_TYPE} 'mysql_proxy' 0)
 MYSQL_PORT=${MYSQL_PORT:-3306}
 
 MYSQL_USER=$(opsman::get_product_credential $PRODUCT_TYPE mysql_admin_credentials | jq -r .credential.value.identity)

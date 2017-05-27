@@ -56,7 +56,7 @@ jobs:
           - name: backup-timestamp
           run:
             path: pipeline-src/scripts/backup-mysql.sh
-            args: [cf]
+            args: [cf-]
         params: *backup-restore-task-params
 
       - task: create-blobstore-object-links
