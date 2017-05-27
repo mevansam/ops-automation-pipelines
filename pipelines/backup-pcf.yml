@@ -211,7 +211,7 @@ shared:
     params: *backup-restore-task-params
 
   - &backup-restore-task-params
-    # TRACE: true
+    TRACE: {{trace_tasks}}
     SSH_KEY: {{ssh_key}}
     OPSMAN_HOST: {{opsman_host}}
     OPSMAN_SSH_USER: {{opsman_ssh_user}}
