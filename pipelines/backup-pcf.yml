@@ -140,9 +140,6 @@ resources:
   source:
     uri: {{pipeline_src_repo}}
     branch: {{pipeline_src_repo_branch}}
-    paths:
-    - ci/assets/scripts/*
-    - ci/task-scripts/*
     private_key: {{git_key}}
 
 - name: {{environment}}
