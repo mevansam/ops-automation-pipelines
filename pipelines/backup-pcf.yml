@@ -143,7 +143,7 @@ resources:
     paths:
     - ci/assets/scripts/*
     - ci/task-scripts/*
-    private_key: {{git_access_key}}
+    private_key: {{git_key}}
 
 - name: {{environment}}
   type: pool
@@ -151,7 +151,7 @@ resources:
     uri: {{environment_pool_repo}}
     branch: {{environment_pool_branch}}
     pool: {{environment_pool_path}}
-    private_key: {{git_access_key}}
+    private_key: {{git_key}}
 
 - name: daily
   type: time
@@ -242,14 +242,10 @@ shared:
     ## Backend type should be one of 'scp', 's3', 'swift'
     BACKUP_TYPE: swift
     
-    ## Params to upload backups to OpenStack Swift Storage
-    OS_AUTH_URL: {{os_auth_url}}
-    OS_IDENTITY_API_VERSION: {{os_identity_api_version}}
-    OS_PROJECT_DOMAIN_NAME: {{os_project_domain_name}}
-    OS_PROJECT_NAME: {{os_project_name}}
-    OS_USER_DOMAIN_NAME: {{os_user_domain_name}}
-    OS_USERNAME: {{os_username}}
-    OS_PASSWORD: {{os_password}}
+    ## Params to upload backups via SCP to a remote host path
+    BACKUP_SSH_USER: {{backup_ssh_user}}
+    BACKUP_SSH_HOST: {{backup_ssh_host}}
+    BACKUP_SSH_PASSWORD: {{backup_ssh_password}}
     
     ## Params to upload backups to S3 Storage
     # S3_DOMAIN: {{s3_domain}}
@@ -258,7 +254,11 @@ shared:
     # AWS_SECRET_ACCESS_KEY: {{aws_secret_access_key}}
     # AWS_REGION: {{aws_region}}
     
-    ## Params to upload backups via SCP to a remote host path
-    # BACKUP_SSH_USER: {{backup_ssh_user}}
-    # BACKUP_SSH_HOST: {{backup_ssh_host}}
-    # BACKUP_SSH_PASSWORD: {{backup_ssh_password}}
+    ## Params to upload backups to OpenStack Swift Storage
+    # OS_AUTH_URL: {{os_auth_url}}
+    # OS_IDENTITY_API_VERSION: {{os_identity_api_version}}
+    # OS_PROJECT_DOMAIN_NAME: {{os_project_domain_name}}
+    # OS_PROJECT_NAME: {{os_project_name}}
+    # OS_USER_DOMAIN_NAME: {{os_user_domain_name}}
+    # OS_USERNAME: {{os_username}}
+    # OS_PASSWORD: {{os_password}}

@@ -44,14 +44,10 @@ opsman_passphrase:
 pcfops_client: 
 pcfops_secret: 
 
-## OpenStack credentials for Swift access
-os_auth_url: 
-os_identity_api_version: 
-os_project_domain_name: 
-os_project_name: 
-os_user_domain_name: 
-os_username: 
-os_password: 
+## Credentials for uploading backups via SCP to a remote host path
+backup_ssh_user: 
+backup_ssh_host: 
+backup_ssh_password: 
 
 ## Credentials for S3 access
 # s3_domain: 
@@ -60,7 +56,11 @@ os_password:
 # aws_secret_access_key: 
 # aws_region: 
 
-## Credentials for uploading backups via SCP to a remote host path
-# backup_ssh_user: 
-# backup_ssh_host: 
-# backup_ssh_password: 
+## OpenStack credentials for Swift access
+# os_auth_url: 
+# os_identity_api_version: 
+# os_project_domain_name: 
+# os_project_name: 
+# os_user_domain_name: 
+# os_username: 
+# os_password: 
