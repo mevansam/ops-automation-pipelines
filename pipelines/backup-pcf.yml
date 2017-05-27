@@ -203,8 +203,7 @@ shared:
       platform: linux
       image_resource: *automation-image-resource
       inputs:
-      - name: scripts
-      - name: tasks
+      - name: pipeline-src
       run:
         path: pipeline-src/scripts/bosh-job-action.sh
         args: [cf-, cloud_controller, start]
