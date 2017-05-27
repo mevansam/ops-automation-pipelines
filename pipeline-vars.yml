@@ -50,6 +50,9 @@ pcfops_secret:
 # Type of backup storage backend 
 backup_storage_type: scp
 
+# Destination target name where backup folder will be uploaded to
+backup_target:
+
 ## Credentials for uploading backups via SCP to a remote host path
 backup_ssh_user: 
 backup_ssh_host: 

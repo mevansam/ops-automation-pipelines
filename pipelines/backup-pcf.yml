@@ -217,7 +217,7 @@ shared:
     OPSMAN_PASSPHRASE: {{opsman_passphrase}}
     PCFOPS_CLIENT: {{pcfops_client}}
     PCFOPS_SECRET: {{pcfops_secret}}
-    BACKUP_TARGET: pcf_backup
+    BACKUP_TARGET: {{backup_target}}
 
     ## Backup storage backend type should be one of 'scp', 's3', 'swift'
     BACKUP_TYPE: {{backup_storage_type}}
