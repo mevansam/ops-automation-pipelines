@@ -4,7 +4,7 @@ platform: linux
 # This task configuraiton file is used for testing only. Stand-alone execution of the task can 
 # be run with the following fly command.
 #
-# fly -t stcs-jed e -c backup-redis.yml -i pipeline-src=../ -i backup-timestamp=../.backup-metadata
+# fly -t stcs-jed e -c backup-redis.yml -i pipeline-src=../ -i backup-timestamp=../.test-data -i job-session=.test-data
 
 image_resource:
   type: docker-image
@@ -14,6 +14,7 @@ image_resource:
 inputs:
 - name: pipeline-src
 - name: backup-timestamp
+- name: job-session
 
 run:
   path: pipeline-src/scripts/backup-redis.sh

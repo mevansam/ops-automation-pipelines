@@ -25,4 +25,12 @@ fi
 $SSH_PASS ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $OPSMAN_SSH_USER@$OPSMAN_HOST -- \
     "sudo su -c 'service tempest-web stop; rm -fr /tmp/*; service tempest-web start'"
 
+opsman::login_client $OPSMAN_HOST $PCFOPS_CLIENT $PCFOPS_SECRET $OPSMAN_PASSPHRASE
+opsman::download_bosh_ca_cert $OPSMAN_HOST $OPSMAN_SSH_USER $OPSMAN_SSH_PASSWD
+
+echo "opsman_url=$opsman_url" > job-session/env
+echo "opsman_token=$opsman_token" >> job-session/env
+echo "BOSH_HOST=$(opsman::get_director_ip)" >> job-session/env
+echo "CA_CERT='$(cat root_ca_certificate)'" >> job-session/env
+
 set +e +x

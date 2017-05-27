@@ -4,8 +4,8 @@ platform: linux
 # This task configuraiton file is used for testing only. Stand-alone execution of the task can 
 # be run with the following fly command.
 #
-# rm -fr .backup-metadata && mkdir -p .backup-metadata; touch .backup-metadata/name; touch .backup-metadata/metadata
-# fly -t stcs-jed e -c prepare-backup.yml -i pipeline-src=../ -i backup-metadata=.backup-metadata -o backup-timestamp=.backup-metadata
+# rm -fr .test-data && mkdir -p .test-data; touch .test-data/name; touch .test-data/metadata
+# fly -t stcs-jed e -c prepare-opsman-backup.yml -i pipeline-src=../ -i backup-metadata=.test-data -o backup-timestamp=.test-data -o job-session=.test-data
 
 image_resource:
   type: docker-image
@@ -17,10 +17,11 @@ inputs:
 - name: backup-metadata
 
 run:
-  path: pipeline-src/scripts/prepare-backup.sh
+  path: pipeline-src/scripts/prepare-opsman-backup.sh
 
 outputs:
 - name: backup-timestamp
+- name: job-session
 
 params:
   # Copy params from backup-pcf.yml pipeline 

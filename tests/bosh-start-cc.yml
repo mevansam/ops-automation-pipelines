@@ -4,7 +4,7 @@ platform: linux
 # This task configuraiton file is used for testing only. Stand-alone execution of the task can 
 # be run with the following fly command.
 #
-# fly -t stcs-jed e -c bosh-start-cc.yml -i pipeline-src=../
+# fly -t stcs-jed e -c bosh-start-cc.yml -i pipeline-src=../ -i job-session=.test-data
 
 image_resource:
   type: docker-image
@@ -13,6 +13,7 @@ image_resource:
 
 inputs:
 - name: pipeline-src
+- name: job-session
 
 run:
   path: pipeline-src/scripts/bosh-job-action.sh

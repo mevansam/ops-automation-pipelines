@@ -13,8 +13,7 @@ if [[ -n "$OPSMAN_SSH_PASSWD" ]]; then
 fi
 
 source backup-timestamp/metadata
-
-opsman::login_client $OPSMAN_HOST $PCFOPS_CLIENT $PCFOPS_SECRET $OPSMAN_PASSPHRASE
+source job-session/env
 
 INSTALLATION_ZIP=$(pwd)/backup/$BACKUP_TIMESTAMP/opsman/installation.zip
 mkdir -p $(dirname $INSTALLATION_ZIP)

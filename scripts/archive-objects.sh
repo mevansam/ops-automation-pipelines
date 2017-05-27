@@ -14,11 +14,9 @@ set -e
 )
 
 source backup-timestamp/metadata
+source job-session/env
 
-opsman::download_bosh_ca_cert $OPSMAN_HOST $OPSMAN_SSH_USER $OPSMAN_SSH_PASSWD
-
-opsman::login_client $OPSMAN_HOST $PCFOPS_CLIENT $PCFOPS_SECRET $OPSMAN_PASSPHRASE
-bosh::login_client root_ca_certificate $(opsman::get_director_ip) $PCFOPS_CLIENT $PCFOPS_SECRET
+bosh::login_client "$CA_CERT" $BOSH_HOST $PCFOPS_CLIENT $PCFOPS_SECRET
 
 DEPLOYMENT_PATTERN=$1
 INSTANCE_PATTERN=$2

@@ -27,9 +27,10 @@ jobs:
       - name: {{environment}}
         path: backup-metadata
       run:
-        path: pipeline-src/scripts/prepare-backup.sh
+        path: pipeline-src/scripts/prepare-opsman-backup.sh
       outputs:
       - name: backup-timestamp
+      - name: job-session
     params: *backup-restore-task-params
 
   - task: stop-cc
@@ -38,6 +39,7 @@ jobs:
       image_resource: *automation-image-resource
       inputs:
       - name: pipeline-src
+      - name: job-session
       run:
         path: pipeline-src/scripts/bosh-job-action.sh
         args: [cf-, cloud_controller, stop]
@@ -54,6 +56,7 @@ jobs:
           inputs:
           - name: pipeline-src
           - name: backup-timestamp
+          - name: job-session
           run:
             path: pipeline-src/scripts/backup-mysql.sh
             args: [cf-]
@@ -65,6 +68,7 @@ jobs:
           image_resource: *automation-image-resource
           inputs:
           - name: pipeline-src
+          - name: job-session
           run:
             path: pipeline-src/scripts/create-object-links.sh
             args: 
@@ -84,6 +88,7 @@ jobs:
           inputs:
           - name: pipeline-src
           - name: backup-timestamp
+          - name: job-session
           run:
             path: pipeline-src/scripts/archive-objects.sh
             args: 
@@ -101,6 +106,7 @@ jobs:
         inputs:
         - name: pipeline-src
         - name: backup-timestamp
+        - name: job-session
         run:
           path: pipeline-src/scripts/backup-opsman.sh
       params: *backup-restore-task-params
@@ -204,6 +210,7 @@ shared:
       image_resource: *automation-image-resource
       inputs:
       - name: pipeline-src
+      - name: job-session
       run:
         path: pipeline-src/scripts/bosh-job-action.sh
         args: [cf-, cloud_controller, start]
