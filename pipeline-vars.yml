@@ -1,5 +1,8 @@
 ---
 
+# Locale to use for timer resources
+locale: 
+
 # Slack notification endpoint
 slack_webhook_url: 
 slack_username: 
@@ -13,10 +16,6 @@ git_user:
 
 # The github key to use when updating version files
 git_key:
-
-# The github API key to use when accessing 
-# github repositories
-github_api_key: 
 
 # The automation-pipelines repository
 pipeline_src_repo: https://github.com/appbricks/ops-automation-pipelines.git
@@ -44,23 +43,26 @@ opsman_passphrase:
 pcfops_client: 
 pcfops_secret: 
 
+# Type of backup storage backend 
+backup_storage_type: scp
+
 ## Credentials for uploading backups via SCP to a remote host path
 backup_ssh_user: 
 backup_ssh_host: 
 backup_ssh_password: 
 
 ## Credentials for S3 access
-# s3_domain: 
-# s3_bucket_name: 
-# aws_access_key_id: 
-# aws_secret_access_key: 
-# aws_region: 
+s3_domain: 
+s3_bucket_name: 
+aws_access_key_id: 
+aws_secret_access_key: 
+aws_region: 
 
 ## OpenStack credentials for Swift access
-# os_auth_url: 
-# os_identity_api_version: 
-# os_project_domain_name: 
-# os_project_name: 
-# os_user_domain_name: 
-# os_username: 
-# os_password: 
+os_auth_url: 
+os_identity_api_version: 
+os_project_domain_name: 
+os_project_name: 
+os_user_domain_name: 
+os_username: 
+os_password: 

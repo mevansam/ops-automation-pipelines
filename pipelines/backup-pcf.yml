@@ -239,8 +239,8 @@ shared:
     PCFOPS_SECRET: {{pcfops_secret}}
     BACKUP_TARGET: pcf_backup
 
-    ## Backend type should be one of 'scp', 's3', 'swift'
-    BACKUP_TYPE: swift
+    ## Backup storage backend type should be one of 'scp', 's3', 'swift'
+    BACKUP_TYPE: {{backup_storage_type}}
     
     ## Params to upload backups via SCP to a remote host path
     BACKUP_SSH_USER: {{backup_ssh_user}}
@@ -248,17 +248,17 @@ shared:
     BACKUP_SSH_PASSWORD: {{backup_ssh_password}}
     
     ## Params to upload backups to S3 Storage
-    # S3_DOMAIN: {{s3_domain}}
-    # S3_BUCKET_NAME: {{s3_bucket_name}}
-    # AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
-    # AWS_SECRET_ACCESS_KEY: {{aws_secret_access_key}}
-    # AWS_REGION: {{aws_region}}
+    S3_DOMAIN: {{s3_domain}}
+    S3_BUCKET_NAME: {{s3_bucket_name}}
+    AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
+    AWS_SECRET_ACCESS_KEY: {{aws_secret_access_key}}
+    AWS_REGION: {{aws_region}}
     
-    ## Params to upload backups to OpenStack Swift Storage
-    # OS_AUTH_URL: {{os_auth_url}}
-    # OS_IDENTITY_API_VERSION: {{os_identity_api_version}}
-    # OS_PROJECT_DOMAIN_NAME: {{os_project_domain_name}}
-    # OS_PROJECT_NAME: {{os_project_name}}
-    # OS_USER_DOMAIN_NAME: {{os_user_domain_name}}
-    # OS_USERNAME: {{os_username}}
-    # OS_PASSWORD: {{os_password}}
+    # Params to upload backups to OpenStack Swift Storage
+    OS_AUTH_URL: {{os_auth_url}}
+    OS_IDENTITY_API_VERSION: {{os_identity_api_version}}
+    OS_PROJECT_DOMAIN_NAME: {{os_project_domain_name}}
+    OS_PROJECT_NAME: {{os_project_name}}
+    OS_USER_DOMAIN_NAME: {{os_user_domain_name}}
+    OS_USERNAME: {{os_username}}
+    OS_PASSWORD: {{os_password}}
