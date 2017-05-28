@@ -52,6 +52,9 @@ backup_interval:
 backup_interval_start:
 backup_interval_end:
 
+# Backups older than this age will be cleaned up
+backup_age: 2
+
 # Type of backup storage backend 
 backup_storage_type: scp
 

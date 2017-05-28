@@ -120,7 +120,7 @@ jobs:
       - name: backup-timestamp
       run:
         path: pipeline-src/scripts/cleanup-backup.sh
-        args: [2]
+        args: [{{backup_age}}]
       outputs:
       - name: restore-timestamp
     params: *backup-restore-task-params
