@@ -18,6 +18,6 @@ grep -q "^RESTORE_TIMESTAMP=" restore-timestamp/metadata && \
     echo "RESTORE_TIMESTAMP=$BACKUP_TIMESTAMP" >> restore-timestamp/metadata
 
 BACKUP_AGE=${1:-7}
-backup::cleanup $BACKUP_AGE $BACKUP_TYPE $BACKUP_TARGET $BACKUP_SSH_HOST $BACKUP_SSH_USER $BACKUP_SSH_PASSWORD
+backup::cleanup $BACKUP_AGE $BACKUP_TYPE $BACKUP_TARGET
 
 set +e +x
