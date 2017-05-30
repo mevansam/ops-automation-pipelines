@@ -27,6 +27,7 @@ $SSH_PASS ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $OPSMA
 
 opsman::login_client $OPSMAN_HOST $PCFOPS_CLIENT $PCFOPS_SECRET $OPSMAN_PASSPHRASE
 opsman::download_bosh_ca_cert $OPSMAN_HOST $OPSMAN_SSH_USER $OPSMAN_SSH_PASSWD
+opsman::wait_for_last_apply_to_finish
 
 echo "opsman_url=$opsman_url" > job-session/env
 echo "opsman_token=$opsman_token" >> job-session/env
