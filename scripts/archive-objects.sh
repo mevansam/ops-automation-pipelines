@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source ~/scripts/iaas-func.sh
-source ~/scripts/opsman-func.sh
 source ~/scripts/bosh-func.sh
 iaas::initialize
 
@@ -18,40 +17,40 @@ source job-session/env
 
 bosh::login_client "$CA_CERT" $BOSH_HOST $PCFOPS_CLIENT $PCFOPS_SECRET
 
-DEPLOYMENT_PATTERN=$1
-INSTANCE_PATTERN=$2
-ARCHIVE_ROOT_PATH=$3
-ARCHIVE_OBJECTS=$4
-ARCHIVE_DEST_NAME=$5
+deployment_pattern=$1
+instance_pattern=$2
+archive_root_path=$3
+archive_objects=$4
+archive_dest_name=$5
 
-JOB_INSTANCE_IP=$(opsman::get_job_vm_ip "$DEPLOYMENT_PATTERN" "$INSTANCE_PATTERN" 0)
+job_instance_ip=$(bosh::get_job_vm_ip "$deployment_pattern" "$instance_pattern" 0)
 
 # Enable passwordless sudo on job instance to backup
 function cleanup_instance {
 
     # Reset passwordless sudo on exit
-    ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no vcap@$JOB_INSTANCE_IP -- <<EOF
+    ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no vcap@$job_instance_ip -- <<EOF
 [[ -e /etc/sudoers.orig ]] && sudo mv /etc/sudoers.orig /etc/sudoers
 EOF
 }
 trap cleanup_instance EXIT
 
-PREPARE_INSTANCE=$(cat <<END
+prepare_instance=$(cat <<END
 [[ -e /etc/sudoers.orig ]] || cp /etc/sudoers /etc/sudoers.orig
 grep "^vcap " /etc/sudoers || echo -e "\nvcap ALL = (ALL) NOPASSWD: ALL" >> /etc/sudoers
 END
 )
-bosh::ssh "$DEPLOYMENT_PATTERN" "$INSTANCE_PATTERN" "$PREPARE_INSTANCE"
+bosh::ssh "$deployment_pattern" "$instance_pattern" "$prepare_instance"
 
 # Archive and compress blobs and stream to local backup location
 
-ARCHIVE_DEST_PATH=backup/$BACKUP_TIMESTAMP/$ARCHIVE_DEST_NAME
-mkdir -p $ARCHIVE_DEST_PATH
+archive_dest_path=backup/$BACKUP_TIMESTAMP/$archive_dest_name
+mkdir -p $archive_dest_path
 
-for b in $(echo "$ARCHIVE_OBJECTS"); do
+for b in $(echo "$archive_objects"); do
     echo "Backing up blobs: $b"
-    ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no vcap@$JOB_INSTANCE_IP -- \
-        "sudo su -c 'cd $ARCHIVE_ROOT_PATH && tar czvf - $b'" > $ARCHIVE_DEST_PATH/$b.tgz
+    ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no vcap@$job_instance_ip -- \
+        "sudo su -c 'cd $archive_root_path && tar czvf - $b'" > $archive_dest_path/$b.tgz
 done
 
 # Upload blobs to storage

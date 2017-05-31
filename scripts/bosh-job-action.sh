@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source ~/scripts/iaas-func.sh
-source ~/scripts/opsman-func.sh
 source ~/scripts/bosh-func.sh
 iaas::initialize
 
@@ -12,18 +11,18 @@ source job-session/env
 
 bosh::login_client "$CA_CERT" $BOSH_HOST $PCFOPS_CLIENT $PCFOPS_SECRET
 
-DEPLOYMENT_PREFIX=$1
-JOB_PREFIX=$2/
-ACTION=$3
+deployment_prefix=$1
+job_prefix=$2/
+action=$3
 
-case $ACTION in
+case $action in
     start)
-        bosh::ssh $DEPLOYMENT_PREFIX $JOB_PREFIX "monit start all"
-        bosh::enable_resurrection $DEPLOYMENT_PREFIX
+        bosh::ssh $deployment_prefix $job_prefix "monit start all"
+        bosh::enable_resurrection $deployment_prefix
         ;;
     stop)
-        bosh::disable_resurrection $DEPLOYMENT_PREFIX
-        bosh::ssh $DEPLOYMENT_PREFIX $JOB_PREFIX "monit stop all"
+        bosh::disable_resurrection $deployment_prefix
+        bosh::ssh $deployment_prefix $job_prefix "monit stop all"
         ;;
     *)
         echo "Only 'start' and 'stop' actions are supported for the job."

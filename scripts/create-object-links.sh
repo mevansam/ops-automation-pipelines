@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source ~/scripts/iaas-func.sh
-source ~/scripts/opsman-func.sh
 source ~/scripts/bosh-func.sh
 iaas::initialize
 
@@ -17,31 +16,29 @@ source job-session/env
 
 bosh::login_client "$CA_CERT" $BOSH_HOST $PCFOPS_CLIENT $PCFOPS_SECRET
 
-DEPLOYMENT_PATTERN=$1
-INSTANCE_PATTERN=$2
-ROOT_PATH=$3
-OBJECTS=$4
-DESTINATION=$5
+deployment_pattern=$1
+instance_pattern=$2
+root_path=$3
+objects=$4
+destination=$5
 
-JOB_INSTANCE_IP=$(opsman::get_job_vm_ip "$DEPLOYMENT_PATTERN" "$INSTANCE_PATTERN" 0)
-
-CREATE_OBJECT_LINKS=$(cat <<END
+create_object_links=$(cat <<END
 #!/bin/bash
 set -e
 
-pushd $ROOT_PATH
-rm -fr $DESTINATION
+pushd $root_path
+rm -fr $destination
 
-for o in \$(echo "$OBJECTS"); do
+for o in \$(echo "$objects"); do
     for d in \$(find \$o -type d); do
-        mkdir -p $DESTINATION/\$d
+        mkdir -p $destination/\$d
     done
     for f in \$(find \$o -type f); do
-        ln \$f $DESTINATION/\$f
+        ln \$f $destination/\$f
     done
 done
 
 popd
 END
 )
-bosh::ssh "$DEPLOYMENT_PATTERN" "$INSTANCE_PATTERN" "$CREATE_OBJECT_LINKS"
+bosh::ssh "$deployment_pattern" "$instance_pattern" "$create_object_links"

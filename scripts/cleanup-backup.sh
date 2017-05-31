@@ -1,8 +1,6 @@
 #!/bin/bash
 
 source ~/scripts/iaas-func.sh
-source ~/scripts/opsman-func.sh
-source ~/scripts/bosh-func.sh
 iaas::initialize
 
 [[ -n "$TRACE" ]] && set -x
