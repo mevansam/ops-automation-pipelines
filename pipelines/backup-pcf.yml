@@ -13,7 +13,6 @@ jobs:
     - get: daily
       trigger: true
 
-  - aggregate:
     - put: {{environment}}
       params:
         claim: {{environment}}
