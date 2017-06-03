@@ -16,4 +16,4 @@ bosh::login_client "$CA_CERT" $BOSH_HOST $PCFOPS_CLIENT $PCFOPS_SECRET
 echo "Backing up Redis..."
 
 
-backup::upload backup $BACKUP_TYPE $BACKUP_TARGET $BACKUP_SSH_HOST $BACKUP_SSH_USER $BACKUP_SSH_PASSWORD
+backup::upload backup $BACKUP_TYPE $BACKUP_TARGET

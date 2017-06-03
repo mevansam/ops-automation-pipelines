@@ -58,7 +58,11 @@ jobs:
           - name: job-session
           run:
             path: pipeline-src/scripts/backup-mysql.sh
-            args: [cf-]
+            args: 
+            - 'cf-'
+            - 'mysql_proxy'
+            - 'ert-mysql'
+            - 'ERT_'
         params: *backup-restore-task-params
 
       - task: create-blobstore-object-links
@@ -95,7 +99,7 @@ jobs:
             - 'nfs_.*'
             - '/var/vcap/store/shared/__backup_links__'
             - 'cc-buildpacks cc-droplets cc-packages cc-resources'
-            - 'blobstore'
+            - 'ert-blobstore'
         params: *backup-restore-task-params
 
     - task: backup-opsman
@@ -108,6 +112,38 @@ jobs:
         - name: job-session
         run:
           path: pipeline-src/scripts/backup-opsman.sh
+      params: *backup-restore-task-params
+
+    - task: backup-mysql-tile
+      config:
+        platform: linux
+        image_resource: *automation-image-resource
+        inputs:
+        - name: pipeline-src
+        - name: backup-timestamp
+        - name: job-session
+        run:
+          path: pipeline-src/scripts/backup-mysql.sh
+          args: 
+          - 'p-mysql-'
+          - 'proxy'
+          - 'mysql'
+      params: *backup-restore-task-params
+
+    - task: backup-rmq-tile
+      config:
+        platform: linux
+        image_resource: *automation-image-resource
+        inputs:
+        - name: pipeline-src
+        - name: backup-timestamp
+        - name: job-session
+        run:
+          path: pipeline-src/scripts/backup-rmq.sh
+          args: 
+          - 'p-rabbitmq-'
+          - 'rabbitmq-haproxy'
+          - 'rmq'
       params: *backup-restore-task-params
 
   - task: cleanup

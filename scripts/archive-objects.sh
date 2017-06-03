@@ -8,7 +8,7 @@ iaas::initialize
 set -e
 
 [[ $# -ne 5 ]] && (
-    echo -e "Usage: ./backup-persistent-storage.sh <DEPLOYMENT_PATTERN> <INSTANCE_PATTERN> <ARCHIVE_ROOT_PATH> <ARCHIVE_OBJECTS> <ARCHIVE_DEST_NAME>"
+    echo -e "Usage: ./archive-objects.sh <DEPLOYMENT_PATTERN> <INSTANCE_PATTERN> <ARCHIVE_ROOT_PATH> <ARCHIVE_OBJECTS> <ARCHIVE_DEST_NAME>"
     exit 1
 )
 
@@ -55,4 +55,4 @@ done
 
 # Upload blobs to storage
 
-backup::upload backup $BACKUP_TYPE $BACKUP_TARGET $BACKUP_SSH_HOST $BACKUP_SSH_USER $BACKUP_SSH_PASSWORD
+backup::upload backup $BACKUP_TYPE $BACKUP_TARGET
